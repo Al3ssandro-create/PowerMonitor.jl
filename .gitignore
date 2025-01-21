@@ -6,7 +6,7 @@
 *.jl.cov
 *.jl.mem
 Manifest.toml
-
+Project.toml
 # Ignore editor/OS-specific files
 *.DS_Store
 *.swp
