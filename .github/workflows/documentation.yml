@@ -23,6 +23,10 @@ jobs:
 
     - name: Install dependencies
       run: julia --project=. -e 'using Pkg; Pkg.instantiate()'
+    
+    - name: Install dependencies
+      run: julia --project=docs/ -e 'using Pkg; Pkg.add("Documenter"); Pkg.instantiate()'
+       
 
     - name: Build documentation
       run: julia --project=docs/ docs/make.jl
