@@ -1,0 +1,15 @@
+# Ignore build artifacts
+/build/
+/docs/build/
+
+# Ignore Julia package-specific files
+*.jl.cov
+*.jl.mem
+Manifest.toml
+
+# Ignore editor/OS-specific files
+*.DS_Store
+*.swp
+*.swo
+.idea/
+.vscode/
