@@ -61,7 +61,7 @@ end
 
 ## Documentation
 
-The full documentation is available [here](https://yourusername.github.io/PowerMonitor.jl/).
+The full documentation is available [here](https://Al3ssandro-create.github.io/PowerMonitor.jl/).
 
 It includes:
 - **API reference** for all functions, types, and macros.
