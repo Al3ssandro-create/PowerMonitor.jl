@@ -8,4 +8,4 @@ PowerMonitor.jl is a Julia library for monitoring power consumption of CPUs and 
 - Log power data to CSV files.
 - Monitor power usage during code execution with a macro.
 
-See the [API documentation](./api.md) for details.
+See the [API documentation](guide/api.md) for details.
