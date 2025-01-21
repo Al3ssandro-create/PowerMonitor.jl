@@ -1,0 +1,3 @@
+name = "PowerMonitor"
+uuid = "12345678-1234-1234-1234-123456789abc"  # Replace with a real UUID
+version = "0.1.0"
