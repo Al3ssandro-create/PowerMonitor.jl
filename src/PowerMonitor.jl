@@ -2,16 +2,21 @@ module PowerMonitor
 
 using CUDA
 
-# Structure to store power data
-mutable struct PowerData
-    """
-    Structure to store power monitoring data.
+"""
+Structure to store power monitoring data.
 
-    Fields:
-        - time::Vector{Float64}: Time points (in seconds) when measurements were taken.
-        - gpu_power::Vector{Float64}: GPU power consumption values (in watts).
-        - cpu_power::Vector{Float64}: CPU power consumption values (in watts).
-    """
+## Fields:
+- `time::Vector{Float64}`: Time points (in seconds) when measurements were taken.
+- `gpu_power::Vector{Float64}`: GPU power consumption values (in watts).
+- `cpu_power::Vector{Float64}`: CPU power consumption values (in watts).
+
+## Example:
+```julia
+data = PowerData([0.1, 0.2], [50.0, 52.0], [10.0, 12.0])
+println(data.gpu_power)  # [50.0, 52.0]
+```
+"""
+mutable struct PowerData
     time::Vector{Float64}
     gpu_power::Vector{Float64}
     cpu_power::Vector{Float64}
@@ -20,16 +25,21 @@ end
 """
 Structure to monitor CPU power consumption using RAPL (Running Average Power Limit).
 
-Fields:
-    - prev_energy::Float64: Energy consumption at the previous measurement (in joules).
-    - prev_time::Float64: Time of the previous measurement (in seconds).
-    - initialized::Bool: Whether the monitor has been initialized.
+## Fields:
+- `prev_energy::Float64`: Energy consumption at the previous measurement (in joules).
+- `prev_time::Float64`: Time of the previous measurement (in seconds).
+- `initialized::Bool`: Whether the monitor has been initialized.
 
-Constructor:
-    CPUPowerMonitor(): Initializes a new monitor with default values.
+## Constructor:
+Creates a new `CPUPowerMonitor` instance with default values.
+
+## Example:
+```julia
+monitor = CPUPowerMonitor()
+println(monitor.initialized)  # false
+```
 """
 mutable struct CPUPowerMonitor
-
     prev_energy::Float64
     prev_time::Float64
     initialized::Bool
@@ -39,14 +49,20 @@ mutable struct CPUPowerMonitor
     end
 end
 
-# Initialize GPU power monitoring
 """
 Initializes GPU power monitoring by ensuring CUDA and NVML are available.
 
-Throws an error if CUDA or NVML support is not detected.
+## Throws:
+- An error if CUDA is not available.
+- An error if NVML is not available.
+
+## Example:
+```julia
+init_gpu_monitor()
+println("GPU monitoring initialized.")
+```
 """
 function init_gpu_monitor()
-
     if !CUDA.has_cuda()
         error("CUDA is not available. Ensure that the CUDA toolkit is installed.")
     end
@@ -55,10 +71,14 @@ function init_gpu_monitor()
     end
 end
 
-# Terminate GPU power monitoring
 """
-Placeholder function for GPU power monitoring cleanup.
-Currently, no explicit cleanup is required.
+Placeholder function for GPU power monitoring cleanup. Currently, no explicit cleanup is required.
+
+## Example:
+```julia
+terminate_gpu_monitor()
+println("GPU monitoring terminated.")
+```
 """
 function terminate_gpu_monitor()
     # No cleanup required
@@ -67,12 +87,19 @@ end
 """
 Monitors power consumption of the GPU and CPU over a specified duration.
 
-Parameters:
-    - duration::Float64: Total duration of monitoring (in seconds).
-    - interval::Float64: Sampling interval for power measurements (in seconds).
+## Parameters:
+- `duration::Float64`: Total duration of monitoring (in seconds).
+- `interval::Float64`: Sampling interval for power measurements (in seconds, default = 0.001).
 
-Returns:
-    - PowerData: A structure containing time, GPU power, and CPU power data.
+## Returns:
+- `PowerData`: A structure containing time, GPU power, and CPU power data.
+
+## Example:
+```julia
+data = monitor_power(5.0)
+println("GPU power: ", data.gpu_power)
+println("CPU power: ", data.cpu_power)
+```
 """
 function monitor_power(duration::Float64, interval::Float64 = 0.001)
     init_gpu_monitor()
@@ -99,14 +126,21 @@ end
 """
 Reads CPU power consumption using the Linux sysfs interface.
 
-Parameters:
-    - cpu_monitor::CPUPowerMonitor: The CPU power monitor state.
+## Parameters:
+- `cpu_monitor::CPUPowerMonitor`: The CPU power monitor state.
 
-Returns:
-    - Float64: The calculated CPU power consumption (in watts).
+## Returns:
+- `Float64`: The calculated CPU power consumption (in watts).
 
-Throws:
-    - Error: If unable to read from the RAPL sysfs interface.
+## Throws:
+- Error if unable to read from the RAPL sysfs interface.
+
+## Example:
+```julia
+cpu_monitor = CPUPowerMonitor()
+power = read_cpu_power(cpu_monitor)
+println("CPU power: ", power)
+```
 """
 function read_cpu_power(cpu_monitor::CPUPowerMonitor)
     try
@@ -141,11 +175,19 @@ end
 """
 Logs power data to a CSV file.
 
-Parameters:
-    - file_name::String: Name of the CSV file to save the data.
-    - power_data::PowerData: The power data to log.
+## Parameters:
+- `file_name::String`: Name of the CSV file to save the data.
+- `power_data::PowerData`: The power data to log.
 
-The CSV file contains three columns: Time(s), GPU_Power(W), and CPU_Power(W).
+## Output:
+- The CSV file contains three columns: `Time(s)`, `GPU_Power(W)`, and `CPU_Power(W)`.
+
+## Example:
+```julia
+data = PowerData([0.1, 0.2], [50.0, 52.0], [10.0, 12.0])
+log_power_data("power_data.csv", data)
+println("Power data logged to file.")
+```
 """
 function log_power_data(file_name::String, power_data::PowerData)
     open(file_name, "w") do io
@@ -159,14 +201,18 @@ end
 """
 Monitors power consumption (GPU and CPU) during the execution of a code block.
 
-Parameters:
-    - file_name::String: Name of the CSV file to save the power data.
-    - block: The code block to monitor.
+## Parameters:
+- `file_name::String`: Name of the CSV file to save the power data.
+- `block`: The code block to monitor.
 
-Usage:
-    @monitor_power_block("output.csv") begin
-        # Your code here
+## Usage:
+```julia
+@monitor_power_block "output.csv" begin
+    for i in 1:10^6
+        sqrt(i)
     end
+end
+```
 """
 macro monitor_power_block(file_name::String, block)
     return quote
